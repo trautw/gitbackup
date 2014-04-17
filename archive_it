@@ -1,0 +1,40 @@
+#!/bin/sh
+# Restore:
+# git archive --remote /Pack/git-trautw/trautw.git  master | tar xvfp -
+# metastore --apply --empty-dirs --mtime
+
+# set -x
+
+unset SSH_AUTH_SOCK
+unset LC_ALL
+unset LANG
+
+TOOLHOME=/Pack/archiv
+
+archive() {
+  DIRNAME=$1
+  BRANCH="$USER@`hostname``echo $DIRNAME|tr / _`"
+  cd $DIRNAME
+  git remote add archive archive:archive.git 2>&1 | grep -v "remote archive already exists."
+  git branch --force $BRANCH
+  echo '* -text binary' > .gitattributes
+  if type metastore >/dev/null 2>&1; then
+    metastore -s `find . -maxdepth 1 -name '.git*' -prune -o -name '.metadata' -o -name '.' -o -printf "%f "`
+  else
+    :
+    # echo "Warning: metastore not found"
+  fi
+  git config core.autocrlf false
+  git config core.preloadindex true
+  git config pack.windowMemory 128m
+  # git add --all --force --ignore-errors --verbose
+  git add --all --ignore-errors --verbose
+  git commit -q -m "$0 `date`" 2>&1 | grep -v 'nothing to commit' | grep -v '# On branch master'
+  git push --quiet archive $BRANCH
+}
+
+for archive in $HOME `test -f $HOME/.paths_to_archive && cat $HOME/.paths_to_archive`; do
+  archive $archive
+done
+
+# exec rsync -a archive:bin/archive_it $HOME/bin/archive_it
