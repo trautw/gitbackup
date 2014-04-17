@@ -38,3 +38,5 @@ for archive in $HOME `test -f $HOME/.paths_to_archive && cat $HOME/.paths_to_arc
 done
 
 # exec rsync -a archive:bin/archive_it $HOME/bin/archive_it
+cd $HOME/.gitbackup/gitbackup
+git pull
