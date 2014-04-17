@@ -39,4 +39,4 @@ done
 
 # exec rsync -a archive:bin/archive_it $HOME/bin/archive_it
 cd $HOME/.gitbackup/gitbackup
-git pull
+git pull -q
