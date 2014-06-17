@@ -34,7 +34,7 @@ archive() {
   git add --all --ignore-errors --verbose
   git commit -q -m "$0 `date`" 2>&1 | grep -v 'nothing to commit' | grep -v '# On branch master'
   git push --quiet archive $BRANCH
-  git archive --format=tar --prefix=.git_restore_test --remote archive:archive.git $BRANCH | tar tvf -
+  git archive --format=tar --remote archive:archive.git $BRANCH .git_restore_test | tar tvf -
 }
 
 for archive in $HOME `test -f $HOME/.paths_to_archive && cat $HOME/.paths_to_archive`; do
