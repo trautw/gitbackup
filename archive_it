@@ -42,7 +42,6 @@ archive() {
     echo "ERROR in $0 on `hostname` archiving `pwd`"
     echo "ERROR in $0 on `hostname` archiving `pwd`" >&2
   fi
-  echo AGE=$AGE
 }
 
 for archive in $HOME `test -f $HOME/.paths_to_archive && cat $HOME/.paths_to_archive`; do
