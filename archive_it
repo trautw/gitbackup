@@ -15,6 +15,9 @@ archive() {
   DIRNAME=$1
   BRANCH="$USER@`hostname``echo $DIRNAME|tr / _`"
   cd $DIRNAME
+  # Generate a file to check if restores are working
+  date +%s > .git_restore_test
+  date >> .git_restore_test
   git remote add archive archive:archive.git 2>&1 | grep -v "remote archive already exists."
   git branch --force $BRANCH
   echo '* -text binary' > .gitattributes
@@ -31,6 +34,7 @@ archive() {
   git add --all --ignore-errors --verbose
   git commit -q -m "$0 `date`" 2>&1 | grep -v 'nothing to commit' | grep -v '# On branch master'
   git push --quiet archive $BRANCH
+  git archive --format=tar --prefix=.git_restore_test --remote archive:archive.git $BRANCH | tar tvf -
 }
 
 for archive in $HOME `test -f $HOME/.paths_to_archive && cat $HOME/.paths_to_archive`; do
