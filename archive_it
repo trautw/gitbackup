@@ -36,13 +36,17 @@ archive() {
   git push --quiet archive $BRANCH
   git archive --format=tar --remote archive:archive.git $BRANCH .git_restore_test | tar xf - -C /tmp
   BACKUPDATE=`cat /tmp/.git_restore_test | head -1`
-  /bin/rm /tmp/.git_restore_test
   NOW=`date +%s`
   AGE=`echo $NOW - $BACKUPDATE | bc`
   if [ "$AGE" -lt 0 -o "$AGE" -gt 7200 ]; then
     echo "ERROR in $0 on `hostname` archiving `pwd`"
     echo "ERROR in $0 on `hostname` archiving `pwd`" >&2
+    echo "Current:"
+    cat .git_restore_test
+    echo "Restored:"  
+    cat /tmp/.git_restore_test
   fi
+  /bin/rm /tmp/.git_restore_test
 }
 
 for archive in $HOME `test -f $HOME/.paths_to_archive && cat $HOME/.paths_to_archive`; do
