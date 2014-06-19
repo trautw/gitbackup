@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # Restore:
 # git archive --remote /Pack/git-trautw/trautw.git  master | tar xvfp -
 # metastore --apply --empty-dirs --mtime
@@ -19,7 +19,8 @@ archive() {
   date +%s > .git_restore_test
   date >> .git_restore_test
   git remote add archive archive:archive.git 2>&1 | grep -v "remote archive already exists."
-  git branch --force $BRANCH
+  git branch --force $BRANCH 2>&1 | grep -v 'fatal: Cannot force update the current branch.'
+  git checkout $BRANCH 2>&1 | grep -v 'Already on '
   echo '* -text binary' > .gitattributes
   if type metastore >/dev/null 2>&1; then
     metastore -s `find . -maxdepth 1 -name '.git*' -prune -o -name '.metadata' -o -name '.' -o -printf "%f "`
@@ -30,7 +31,6 @@ archive() {
   git config core.autocrlf false
   git config core.preloadindex true
   git config pack.windowMemory 128m
-  # git add --all --force --ignore-errors --verbose
   git add --all --ignore-errors --verbose
   git commit -q -m "$0 `date`" 2>&1 | grep -v 'nothing to commit' | grep -v '# On branch master'
   git push --quiet archive $BRANCH
@@ -39,7 +39,6 @@ archive() {
   NOW=`date +%s`
   AGE=`echo $NOW - $BACKUPDATE | bc`
   if [ "$AGE" -lt 0 -o "$AGE" -gt 7200 ]; then
-    echo "ERROR in $0 on `hostname` archiving `pwd`"
     echo "ERROR in $0 on `hostname` archiving `pwd`" >&2
     echo "Current:"
     cat .git_restore_test
