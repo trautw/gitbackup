@@ -13,7 +13,7 @@ TOOLHOME=/Pack/archiv
 
 archive() {
   DIRNAME=$1
-  BRANCH="$USER@`hostname``echo $DIRNAME|tr / _`"
+  BRANCH="$LOGNAME@`hostname``echo $DIRNAME|tr / _`"
   cd $DIRNAME
   # Generate a file to check if restores are working
   date +%s > .git_restore_test
