@@ -1,7 +1,12 @@
 #!/bin/bash
-# Restore:
+# Restore all:
 # git archive --remote /Pack/git-trautw/trautw.git  master | tar xvfp -
 # metastore --apply --empty-dirs --mtime
+#
+# Restore single file
+# git log
+# git show f920dfc8ed4b3046c276d5b11a10a8366c21a136:.ssh/authorized_keys > qwe2
+# mv qwe2 .ssh/authorize
 
 # set -x
 
