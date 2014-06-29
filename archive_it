@@ -14,7 +14,9 @@ unset SSH_AUTH_SOCK
 unset LC_ALL
 unset LANG
 
-TOOLHOME=/Pack/archiv
+TMPDIR=/tmp/`basename $0`.$$
+mkdir -p $TMPDIR
+trap "/bin/rm -rf - $TMPDIR" 0
 
 archive() {
   DIRNAME=$1
@@ -39,8 +41,8 @@ archive() {
   git add --all --ignore-errors --verbose
   git commit -q -m "$0 `date`" 2>&1 | grep -v 'nothing to commit' | grep -v '# On branch master'
   git push --quiet archive $BRANCH
-  git archive --format=tar --remote archive:archive.git $BRANCH .git_restore_test | tar xf - -C /tmp
-  BACKUPDATE=`cat /tmp/.git_restore_test | head -1`
+  git archive --format=tar --remote archive:archive.git $BRANCH .git_restore_test | tar xf - -C $TMPDIR
+  BACKUPDATE=`cat $TMPDIR/.git_restore_test | head -1`
   NOW=`date +%s`
   AGE=`echo $NOW - $BACKUPDATE | bc`
   if [ "$AGE" -lt 0 -o "$AGE" -gt 7200 ]; then
@@ -48,9 +50,9 @@ archive() {
     echo "Current:"
     cat .git_restore_test
     echo "Restored:"  
-    cat /tmp/.git_restore_test
+    cat $TMPDIR/.git_restore_test
   fi
-  /bin/rm /tmp/.git_restore_test
+  /bin/rm $TMPDIR/.git_restore_test
 }
 
 for archive in $HOME `test -f $HOME/.paths_to_archive && cat $HOME/.paths_to_archive`; do
