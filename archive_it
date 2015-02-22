@@ -13,16 +13,18 @@ TMPDIR=/tmp/`basename $0`.$$
 mkdir -p $TMPDIR
 trap "/bin/rm -rf - $TMPDIR" 0
 
+
 archive() {
   DIRNAME=$1
   BRANCH="$USER@`hostname``echo $DIRNAME|tr / _`"
   cd $DIRNAME
+  echo "Processing `pwd`"
   # Generate a file to check if restores are working
   date +%s > .git_restore_test
   date >> .git_restore_test
 
   git remote add archive archive:archive.git 2>&1 | grep -v "remote archive already exists."
-  git branch $BRANCH
+  git branch $BRANCH 2>&1 | grep -v "fatal: A branch named '$BRANCH' already exists."
   echo '* -text binary' > .gitattributes
   if type metastore >/dev/null 2>&1; then
     metastore -s `find . -maxdepth 1 -name '.git*' -prune -o -name '.metadata' -o -name '.' -o -type l -o -printf "%f "`
