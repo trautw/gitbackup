@@ -1,6 +1,6 @@
 mkdir $HOME/.gitbackup
 cd $HOME/.gitbackup
-git clone git://github.com/trautw/gitbackup || git clone https://github.com/trautw/gitbackup
+git clone git@github.com:trautw/gitbackup || git clone https://github.com/trautw/gitbackup
 
 # In $HOME/.ssh/config
 #Host archive
