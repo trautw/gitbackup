@@ -37,7 +37,7 @@ archive() {
   git config pack.windowMemory 128m
   # git add --all --force --ignore-errors --verbose
   git add --all --ignore-errors --verbose
-  git commit -q -m "$0 `date`" 2>&1 | grep -v 'nothing to commit' | grep -v '# On branch master'
+  git commit -q -m "`basename $0` `date`" 2>&1 | grep -v 'nothing to commit' | grep -v '# On branch master'
   git -c pack.window=0 -c core.packedGitWindowSize=32m -c core.packedGitLimit=256m -c pack.windowMemory=64m -c pack.packSizeLimit=128m -c gc.auto=0 push --quiet archive $BRANCH
   # Now check
   git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit | head
