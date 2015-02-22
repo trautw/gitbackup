@@ -15,6 +15,10 @@ archive() {
   DIRNAME=$1
   BRANCH="$USER@`hostname``echo $DIRNAME|tr / _`"
   cd $DIRNAME
+  # Generate a file to check if restores are working
+  date +%s > .git_restore_test
+  date >> .git_restore_test
+
   git remote add archive archive:archive.git 2>&1 | grep -v "remote archive already exists."
   git branch --force $BRANCH
   echo '* -text binary' > .gitattributes
@@ -31,6 +35,20 @@ archive() {
   git add --all --ignore-errors --verbose
   git commit -q -m "$0 `date`" 2>&1 | grep -v 'nothing to commit' | grep -v '# On branch master'
   git -c pack.window=0 -c core.packedGitWindowSize=32m -c core.packedGitLimit=256m -c pack.windowMemory=64m -c pack.packSizeLimit=128m -c gc.auto=0 push --quiet archive $BRANCH
+  # Now check
+  git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
+  git archive --format=tar --remote archive:archive.git $BRANCH .git_restore_test | tar xf - -C $TMPDIR
+  BACKUPDATE=`cat $TMPDIR/.git_restore_test | head -1`
+  NOW=`date +%s`
+  AGE=`echo $NOW - $BACKUPDATE | bc`
+  if [ "$AGE" -lt 0 -o "$AGE" -gt 7200 ]; then
+    echo "ERROR in $0 on `hostname` archiving `pwd`" >&2
+    echo "Current:"
+    cat .git_restore_test
+    echo "Restored:"
+    cat $TMPDIR/.git_restore_test
+  fi
+  /bin/rm $TMPDIR/.git_restore_test
 }
 
 for archive in $HOME `test -f $HOME/.paths_to_archive && cat $HOME/.paths_to_archive`; do
