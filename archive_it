@@ -16,7 +16,7 @@ trap "/bin/rm -rf - $TMPDIR" 0
 
 archive() {
   DIRNAME=$1
-  BRANCH="$USER@`hostname``echo $DIRNAME|tr / _`"
+  BRANCH="`id -nur`@`hostname``echo $DIRNAME|tr / _`"
   cd $DIRNAME
   echo "Processing `pwd`"
   # Generate a file to check if restores are working
