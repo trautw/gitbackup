@@ -24,7 +24,13 @@ archive() {
   date >> .git_restore_test
 
   git remote add archive archive:archive.git 2>&1 | grep -v "remote archive already exists."
-  git branch $BRANCH 2>&1 | grep -v "fatal: A branch named '$BRANCH' already exists."
+  git branch | grep "$BRANCH" >/dev/null
+  RESULT=$?
+  if [ $RESULT -ne 0 ]; then
+    echo "need to create branch $BRANCH"
+    git branch $BRANCH
+    git checkout $BRANCH
+  fi
   echo '* -text binary' > .gitattributes
   if type metastore >/dev/null 2>&1; then
     metastore -s `find . -maxdepth 1 -name '.git*' -prune -o -name '.metadata' -o -name '.' -o -type l -o -printf "%f "`
