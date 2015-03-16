@@ -51,7 +51,8 @@ archive() {
   BACKUPDATE=`cat $TMPDIR/.git_restore_test | head -1`
   NOW=`date +%s`
   AGE=`echo $NOW - $BACKUPDATE | bc`
-  if [ "$AGE" -lt 0 -o "$AGE" -gt 7200 ]; then
+  # 4h
+  if [ "$AGE" -lt 0 -o "$AGE" -gt 14400 ]; then
     echo "ERROR in $0 on `hostname` archiving `pwd`" >&2
     echo "Current:"
     cat .git_restore_test
