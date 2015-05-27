@@ -52,7 +52,7 @@ archive() {
   NOW=`date +%s`
   AGE=`echo $NOW - $BACKUPDATE | bc`
   # 4h
-  if diff -q .git_restore_test $TMPDIR/.git_restore_test; then
+  if [ `cat .git_restore_test | sum` != `cat $TMPDIR/.git_restore_test | sum` ]; then
     echo "ERROR in $0 on `hostname` archiving `pwd`" >&2
     echo "Current:"
     cat .git_restore_test
