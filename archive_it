@@ -60,7 +60,7 @@ archive() {
     cat $TMPDIR/.git_restore_test
   fi
   if [ "$AGE" -lt 0 -o "$AGE" -gt 14400 ]; then
-    echo "WARNING: Backup is $AGE old" >&2
+    echo "WARNING: Backup is `echo $AGE/60/60|bc` hours old" >&2
   fi
   /bin/rm $TMPDIR/.git_restore_test
 }
